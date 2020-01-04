@@ -1,8 +1,22 @@
-from lxml import html
 
+from lxml import html
+import lxml
 
 def parse_order(order_html: str, id):
     tree = html.fromstring(order_html)
+
+    order_label = tree.xpath('.//div[@id = "body_content_inner"]/h2/a/text()')[0]
+    date = tree.xpath('.//div[@id = "body_content_inner"]/h2/time/text()')[0]
+
+    taddress = tree.xpath('.//address')
+    for br in taddress[0].xpath("br"):
+        br.tail = "\n" + br.tail if br.tail else "\n"
+    splited_addr = taddress[0].text_content().strip().split()
+    first_name = splited_addr[0]
+    last_name = splited_addr[1]
+    email = splited_addr[2]
+
+
     table = tree.xpath('.//td//div/div/table')[0]
     theads = table.xpath('.//thead/tr/th')
     heads = [head.text_content() for head in theads]
@@ -22,9 +36,14 @@ def parse_order(order_html: str, id):
     props = dict(zip(heads, values))
 
     return {
-        "id": id,
+        "order_label":order_label,
+        "date":date,
+        "message_id": id,
         "items": items,
-        "props": props
+        "props": props,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
     }
 
 

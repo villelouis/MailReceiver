@@ -14,7 +14,7 @@ from parser import parse_order
 IDS_STORE = 'data.pickle'
 TOKEN_STORE = 'token.pickle'
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-
+MESSAGES_STORE = 'messages.pickle'
 
 def get_creds():
     if os.path.exists(TOKEN_STORE):
@@ -89,7 +89,7 @@ def get_orders(service, ids_list):
     return orders, processed_ids
 
 
-def get_stored_messages(message_ids: set):
+def get_stored_messages():
     if os.path.exists(IDS_STORE):
         with open(IDS_STORE, 'rb') as f:
             stored_messages = pickle.load(f)
@@ -98,15 +98,15 @@ def get_stored_messages(message_ids: set):
 
 
 def filter_messages(message_ids: set):
-    stored_messages = get_stored_messages(message_ids)
+    stored_messages = get_stored_messages()
     if not stored_messages:
         return message_ids
     return message_ids.difference(stored_messages)
 
 
-def store_processed_ids(processed_ids):
-    with open(IDS_STORE, 'wb') as f:
-        pickle.dump(processed_ids, f)
+def store_data(data, store_path):
+    with open(store_path, 'wb') as f:
+        pickle.dump(data, f)
 
 
 def main():
@@ -126,11 +126,12 @@ def main():
     orders, processed_ids = get_orders(service, filtred_message_ids)
     print(f"обработано заказов {len(orders)}")
 
-    store_processed_ids(processed_ids)
-    return orders
+    print("запись id обработаных сообщений")
+    store_data(processed_ids, IDS_STORE)
+
+    print("запись обработанных сообщений в хранилище")
+    store_data(orders, MESSAGES_STORE)
 
 
 if __name__ == '__main__':
-    import pprint
-    for order in main():
-        pprint.pprint(order)
+    main()
