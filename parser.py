@@ -1,10 +1,9 @@
 from lxml import html
 
 
-def parse_order(order_html: str):
+def parse_order(order_html: str, id):
     tree = html.fromstring(order_html)
     table = tree.xpath('.//td//div/div/table')[0]
-
     theads = table.xpath('.//thead/tr/th')
     heads = [head.text_content() for head in theads]
     raw_items = table.xpath('.//tbody/tr')
@@ -23,6 +22,7 @@ def parse_order(order_html: str):
     props = dict(zip(heads, values))
 
     return {
+        "id": id,
         "items": items,
         "props": props
     }
@@ -32,5 +32,5 @@ if __name__ == '__main__':
     import pprint
     with open('t.html','r') as f:
         order_html = f.read().replace('\n', '')
-        order = parse_order(order_html)
+        order = parse_order(order_html, 0)
         pprint.pprint(order)
