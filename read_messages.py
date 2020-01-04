@@ -1,5 +1,5 @@
 import os
-from main import MESSAGES_STORE
+from settings import MESSAGES_STORE
 import pickle
 
 def get_stored_messages():

@@ -11,10 +11,7 @@ from googleapiclient.discovery import build
 
 from parser import parse_order
 
-IDS_STORE = 'data.pickle'
-TOKEN_STORE = 'token.pickle'
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-MESSAGES_STORE = 'messages.pickle'
+from settings import IDS_STORE, TOKEN_STORE, SCOPES, MESSAGES_STORE
 
 def get_creds():
     if os.path.exists(TOKEN_STORE):
